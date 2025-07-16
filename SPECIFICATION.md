@@ -93,7 +93,7 @@ EBML File
 
 ### 3. EBML Element Definitions
 
-This section defines the specific elements used in the `[Your DocType Name]` DocType.
+This section defines the specific elements used in the `GameCase` DocType.
 
 #### 3.1. EBML Header
 
@@ -103,9 +103,9 @@ This is the standard EBML Header and **must** be the first element in the file.
 | :--------------- | :--------- | :-------------- | :---------- | :--------------------------------------------- |
 | `EBML`           | `0x1A45DFA3` | Master Element  | 1           | The container for all EBML header elements.    |
 | &nbsp;&nbsp;`EBMLVersion`    | `0x4286`     | Unsigned Int    | 1           | The version of the EBML parser required (e.g., 1). |
-| &nbsp;&nbsp;`DocType`        | `0x4282`     | String          | 1           | The DocType of this file: `"[Your DocType Name]"`. |
+| &nbsp;&nbsp;`DocType`        | `0x4282`     | String          | 1           | The DocType of this file: `"GameCase"`. |
 | &nbsp;&nbsp;`DocTypeVersion` | `0x4287`     | Unsigned Int    | 1           | The version of the DocType that was written (e.g., 1). |
-| &nbsp;&nbsp;`DocTypeReadVersion`|`0x4285`  | Unsigned Int    | 1           | The minimum DocType version a parser must support. |
+| &nbsp;&nbsp;`DocTypeReadVersion`|`0x4285`| Unsigned Int| 1    | The minimum DocType version a parser must support. |
 
 #### 3.2. Root Element: `GameCase`
 
@@ -208,8 +208,8 @@ Stores a single compressed file (zip, 7z, etc.) that may contain one or multiple
 | `CRC32`           | `0xn`      | Binary         | 0..1        | The 4-byte CRC32 hash of the file.    |
 | `MD5`             | `0xn`      | Binary         | 0..1        | The 16-byte MD5 hash of the file.     |
 | `SHA1`            | `0xn`      | Binary         | 0..1        | The 20-byte SHA-1 hash of the file.   |
-| `SHA-256 Hash`    | `0xn`      | Unsigned Int   | 0..1        | The SHA-256 hash of the file.         |
-| `SHA-512 Hash`    | `0xn`      | Unsigned Int   | 0..1        | The SHA-512 hash of the file.         |
+| `SHA-256 Hash`    | `0xn`      | Binary         | 0..1        | The SHA-256 hash of the file.         |
+| `SHA-512 Hash`    | `0xn`      | Binary         | 0..1        | The SHA-512 hash of the file.         |
 
 
 ##### 3.3.4.3 `ChdData` Element (Format: "CHD")
@@ -229,8 +229,8 @@ Stores a collection of CHD files, typically for multi-disc games.
 | `CRC32`      | `0xn`      | Binary         | 0..1        | The 4-byte CRC32 hash of the uncompressed data. |
 | `MD5`        | `0xn`      | Binary         | 0..1        | The 16-byte MD5 hash of the uncompressed data.  |
 | `SHA1`       | `0xn`      | Binary         | 0..1        | The 20-byte SHA-1 hash of the uncompressed data.|
-| `SHA-256 Hash`| `0xn`     | Unsigned Int   | 0..1        | The SHA-256 hash of the uncompressed data.    |
-| `SHA-512 Hash`| `0xn`     | Unsigned Int   | 0..1        | The SHA-512 hash of the uncompressed data.    |
+| `SHA-256 Hash`| `0xn`     | Binary         | 0..1        | The SHA-256 hash of the file.                 |
+| `SHA-512 Hash`| `0xn`     | Binary         | 0..1        | The SHA-512 hash of the file.                 |
 | `CHDBinary`  | `0xn`      | Binary         | 1           | The binary data of the complete .chd file.    |
 
 
@@ -252,8 +252,8 @@ Stores a collection of BIN/CUE file pairs, typically for multi-disc games.
 | `CRC32`       | `0xn`      | Binary         | 0..1        | The 4-byte CRC32 hash of the .bin file.       |
 | `MD5`         | `0xn`      | Binary         | 0..1        | The 16-byte MD5 hash of the .bin file.        |
 | `SHA1`        | `0xn`      | Binary         | 0..1        | The 20-byte SHA-1 hash of the .bin file.      |
-| `SHA-256 Hash`| `0xn`      | Unsigned Int   | 0..1        | The SHA-256 hash of the file.                 |
-| `SHA-512 Hash`| `0xn`      | Unsigned Int   | 0..1        | The SHA-512 hash of the file.                 |
+| `SHA-256 Hash`| `0xn`      | Binary         | 0..1        | The SHA-256 hash of the file.                 |
+| `SHA-512 Hash`| `0xn`      | Binary         | 0..1        | The SHA-512 hash of the file.                 |
 | `BinBinary`   | `0xn`      | Binary         | 1           | The binary data of the complete .bin file.    |
 
 ##### 3.3.4.5 `SSMCData` Element (Format: "SSMC")
@@ -276,8 +276,8 @@ Stores the metadata of an SpriteShrink MultiCart archive, typically contains all
 | `CRC32`       | `0xn`      | Binary         | 0..1        | The 4-byte CRC32 hash of the compressed file. |
 | `MD5`         | `0xn`      | Binary         | 0..1        | The 16-byte MD5 hash of the compressed file.  |
 | `SHA1`        | `0xn`      | Binary         | 0..1        | The 20-byte SHA-1 hash of the file.           |
-| `SHA-256 Hash`| `0xn`      | Unsigned Int   | 0..1        | The SHA-256 hash of the file.                 |
-| `SHA-512 Hash`| `0xn`      | Unsigned Int   | 0..1        | The SHA-512 hash of the file.                 |
+| `SHA-256 Hash`| `0xn`      | Binary         | 0..1        | The SHA-256 hash of the file.                 |
+| `SHA-512 Hash`| `0xn`      | Binary         | 0..1        | The SHA-512 hash of the file.                 |
 
 #### 3.4 `Manuals` Element
 
