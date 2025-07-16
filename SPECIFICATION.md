@@ -1,7 +1,7 @@
 # EBML File Format Specification for Game Case Containers
 
-**Version:** 1.0  
-**Date:** 2025-15-25  
+**Version:** -  
+**Date:** 2025-07-16  
 **Author:** Tyler Bibeault  
 **Based On:** EBML (Extensible Binary Meta Language)
 
@@ -13,7 +13,7 @@
 This document describes the structure of the `.gcase` file format, which is based on the Extensible Binary Meta Language (EBML). The purpose of this specification is to provide a definitive guide for developers who need to create, parse, or write `.gcase` files.
 
 #### 1.2. Scope
-This specification covers version `1.0` of the `Game Case` container format. It defines the mandatory EBML Header and the hierarchical structure of all custom elements used in the file.
+This specification covers version `-` of the `Game Case` container format. It defines the mandatory EBML Header and the hierarchical structure of all custom elements used in the file.
 
 #### 1.3. Target Audience
 This document is intended for software developers and engineers. A basic understanding of binary data structures is assumed. Familiarity with the EBML specification is recommended but not required.
@@ -74,10 +74,10 @@ EBML File
     |   +-- Manual n (Master Element)
     |
     |
-    +-- Box Art (Master Element)
+    +-- Media (Master Element)
         |
-        +-- IndexEntry 1
-        +-- IndexEntry 2
+        +-- ImageCollection 1
+        +-- VideoCollection 1
         +-- ...
 ```
 
@@ -93,19 +93,19 @@ EBML File
 
 ### 3. EBML Element Definitions
 
-This section defines the specific elements used in the `[Your DocType Name]` DocType.
+This section defines the specific elements used in the `GameCase` DocType.
 
 #### 3.1. EBML Header
 
-This is the standard EBML Header and **must** be the first element in the file.
+This is the standard EBML Header and **must** be the first element in the file. The element IDs are fixed and can not be changed per the EBML spec.
 
 | Element Name     | Element ID | Type            | Cardinality | Description                                    |
 | :--------------- | :--------- | :-------------- | :---------- | :--------------------------------------------- |
 | `EBML`           | `0x1A45DFA3` | Master Element  | 1           | The container for all EBML header elements.    |
-| &nbsp;&nbsp;`EBMLVersion`    | `0x4286`     | Unsigned Int    | 1           | The version of the EBML parser required (e.g., 1). |
-| &nbsp;&nbsp;`DocType`        | `0x4282`     | String          | 1           | The DocType of this file: `"[Your DocType Name]"`. |
-| &nbsp;&nbsp;`DocTypeVersion` | `0x4287`     | Unsigned Int    | 1           | The version of the DocType that was written (e.g., 1). |
-| &nbsp;&nbsp;`DocTypeReadVersion`|`0x4285`  | Unsigned Int    | 1           | The minimum DocType version a parser must support. |
+| `EBMLVersion`    | `0x4286`     | Unsigned Int    | 1           | The version of the EBML parser required (e.g., 1). |
+| `DocType`        | `0x4282`     | String          | 1           | The DocType of this file: `"GameCase"`. |
+| `DocTypeVersion` | `0x4287`     | Unsigned Int    | 1           | The version of the DocType that was written (e.g., 1). |
+| `DocTypeReadVersion`|`0x4285`| Unsigned Int| 1    | The minimum DocType version a parser must support. |
 
 #### 3.2. Root Element: `GameCase`
 
@@ -113,200 +113,250 @@ This element acts as the main container for the rest of the file's data.
 
 | Element Name         | Element ID | Type           | Cardinality | Description                                   |
 | :------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `GameCase`           | `[e.g., 0x18538067]`| Master Element| 1   | The top-level element containing all file data.|
+| `GameCase`           | `0x5B00`   | Master Element | 1   | The top-level element containing all file data.|
 
 ##### **Children of `GameCase`:**
 
 | Element Name         | Element ID | Type           | Cardinality | Description                                   |
 | :------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `Game`               | `[e.g., 0x1549A966]`| Master Element| 1   | Contains metadata about the file content.     |
-| `Manuals`            | `[e.g., 0x1F43B675]`| Master Element| 0..1| Contains one or more blocks of primary data.  |
-| `RomHacks`           | `[e.g., 0x1C53BB6B]`| Master Element| 0..1| Contains pointers for fast seeking.           |
-| `FanArt`             | `0xn`      | Master Element | 0..1        |  Contains fan art for the subject game of this file.|
-| `Videos`             | `0xn`      | Master Element | 0..1        | Contains videos of the subject game of this file.|
+| `Game`               | `0x5B01`   | Master Element | 1           | Contains metadata about the file content.     |
+| `Manuals`            | `0x5B02`   | Master Element | 0..1        | Contains game manuals in various formats.     |
+| `RomHacks`           | `0x5B03`   | Master Element | 0..1        | Contains rom hack patches and related metadata.|
+| `Media`              | `0x5B04`   | Master Element | 0..1        |  Contains contains various media of the subject game of this file.|
 
 #### 3.3 `Game` Element
 
 | Element Name         | Element ID | Type           | Cardinality | Description                                   |
 | :------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `Title`              | `[e.g., 0x1549A966]`| UTF-8 String| 1   | Container for file metadata.                  |
-| `Developer`          | `[e.g., 0x4489]`| UTF-8 String| 1..n      | The developer of the game content.            |
-| `Genre`              | `0xn`      | UTF-8 String   | 0..1        | The genre of the game content.                |
-| `Minimum Player Count`| `0xn`     | Unsigned Int   | 0..1        | The minimum number of players required to play the game.|
-| `Maximum Player Count`| `0xn`     | Unsigned Int   | 0..1        | The maximum number of players allowed to play the game.|
-| `Online Player Rating`| `0xn`     | Unsigned Int   | 0..1        | The user or critical rating of the game.      |
-| `Game System`        | `0xn`      | UTF-8 String   | 1           | The game system for the subject game and it's data.|
-| `Region Info`        | `0xn`      | Master Element | 0..n        | Container for the region specific information about the game.|
-| `GameData`           | `0xn`      | Master Element | 0..n        | Container for storing game binary data.       |
+| `Title`              | `0x2E8A00` | UTF-8 String   | 1     | The primary title of the game.                |
+| `Developer`          | `0x2E8A01` | UTF-8 String   | 1..n      | The developer of the game content.            |
+| `Genre`              | `0x2E8A02` | UTF-8 String   | 0..1        | The genre of the game content.                |
+| `MinPlayers`         | `0x2E8A03` | Unsigned Int   | 0..1        | The minimum number of players required to play the game.|
+| `MaxPlayers`         | `0x2E8A04` | Unsigned Int   | 0..1        | The maximum number of players allowed to play the game.|
+| `GameSystem`         | `0x2E8A05` | UTF-8 String   | 1           | The game system for the subject game and it's data.|
+| `Rating`             | `0x2E8A06` | Master Element | 0..1        | The user or critical rating of the game.      |
+| `RegionInfo`         | `0x2E8A07` | Master Element | 0..n        | Container for the region specific information about the game.|
+| `GameData`           | `0x2E8A08` | Master Element | 0..1        | Container for storing game binary data.       |
 
-##### 3.3.1 **Children of `RegionInfo`:**
-
+##### 3.3.1 **Children of `Rating`:**
 | Element Name         | Element ID | Type           | Cardinality | Description                                   |
 | :------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `Region`             | `0xn`      | UTF-8 String   | 1           | The region of this `Region` element.           |
-| `Language`           | `0xn`      | UTF-8 String   | 1..n        | The language of this `Region` element.          |
-| `Release Date`       | `0xn`      | Date           | 1           | The release date of this `Region` element.      |
-| `Publisher`          | `0xn`      | UTF-8 String   | 1           | The publisher of the game content of this `Region` element.|
-| `Age Rating`         | `0xn`      | UTF-8 String   | 1           | The age rating of the game content of this `Region` element.|
+| `RatingValue`        | `0x1E8A9B00`| UTF-8 String  | 1           | The rating value (e.g., "8.5", "4/5", "95%"). |
+| `RatingSource`       | `0x1E8A9B01`| UTF-8 String  | 1           | The entity providing the rating (e.g., "IGN", "User").|
 
-##### 3.3.2 `GameData` Element
+##### 3.3.2 **Children of `RegionInfo`:**
+| Element Name         | Element ID | Type           | Cardinality | Description                                   |
+| :------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
+| `Region`             | `0x1E8A9B02`| UTF-8 String  | 1           | The region of this `Region` element.          |
+| `Language`           | `0x1E8A9B03`| UTF-8 String  | 1..n        | The language of this `Region` element.        |
+| `ReleaseDate`        | `0x1E8A9B04`| Date          | 1           | The release date of this `Region` element.    |
+| `Publisher`          | `0x1E8A9B05`| UTF-8 String  | 1           | The publisher of the game content of this `Region` element.|
+| `AgeRating`          | `0x1E8A9B06`| UTF-8 String  | 1           | The age rating of the game content of this `Region` element.|
+
+
+##### 3.3.3 `GameData` Element
 This element is the container for all game binary data. It can hold multiple `GameDataEntry` elements, which allows for storing different versions or types of game data (e.g., a raw ROM and a compressed CHD version) within the same `.gcase` file.
 
 | Element Name | Element ID          | Type           | Cardinality | Description                                  |
 | :----------- | :------------------ | :------------- | :---------- | :------------------------------------------- |
-| `GameData`   | `[e.g., 0x16549A66]` | Master Element | 0..1        | Container for one or more game data entries. |
+| `GameData`   | `0x2E8A08`          | Master Element | 0..1        | Container for one or more game data entries. |
 
 ###### **Children of `GameData`:**
 | Element Name      | Element ID          | Type           | Cardinality | Description                                   |
 | :---------------- | :------------------ | :------------- | :---------- | :-------------------------------------------- |
-| `GameDataEntry`   | `[e.g., 0x1749A966]`| Master Element | 1..n        | A container for a single instance of game data (e.g., a single ROM, a CHD set, or an archive). |
+| `GameDataEntry`   | `0x2E8A09`          | Master Element | 1..n        | A container for a single instance of game data (e.g., a single ROM, a CHD set, or an archive). Multiple entries can be used to store different regional versions (e.g., USA and Japan) or different formats (e.g., a .iso and a .chd) of the same game within one .gcase file. |
 
-#### 3.3.1.2 `GameDataEntry` Element
+
+#### 3.3.3.1 `GameDataEntry` Element
 This is a self-contained entry for a game's binary data. The `DataFormat` element within it **must** be parsed first, as it defines which other elements are present within this entry.
 
 | Element Name  | Element ID          | Type           | Cardinality | Description                                   |
 | :------------ | :------------------ | :------------- | :---------- | :-------------------------------------------- |
-| `DataFormat`  | `[e.g., 0x5001]`    | UTF-8 String   | 1           | Declares the format of the data. Must be one of: "RAW", "ARCHIVE", "CHD", "BIN/CUE". |
-| `RawData`     | `[e.g., 0x5100]`    | Master Element | 0..1        | Contains data for a single raw game file. **Present if `DataFormat` is "RAW".** |
-| `ArchiveData` | `[e.g., 0x5200]`    | Master Element | 0..1        | Contains data for a compressed archive. **Present if `DataFormat` is "ARCHIVE".** |
-| `ChdData`     | `[e.g., 0x5300]`    | Master Element | 0..1        | Contains data for a CHD collection. **Present if `DataFormat` is "CHD".** |
-| `BinCueData`  | `[e.g., 0x5400]`    | Master Element | 0..1        | Contains data for a BIN/CUE collection. **Present if `DataFormat` is "BIN/CUE".** |
-| `SSMCData`    | `[e.g., 0x5500]`    | Master Element | 0..1        | Contains data for a SpriteShrink MultiCart (.ssmc). **Present if `DataFormat` is "SSMC".** 
+| `DataFormat`  | `0x2E8A0A`          | UTF-8 String   | 1           | Declares the format of the data. Must be one of: "RAW", "ARCHIVE", "CHD", "BIN/CUE". |
+| `RawData`     | `0x2E8A0B`          | Master Element | 0..1        | Contains data for a single raw game file. **Present if `DataFormat` is "RAW".** |
+| `ArchiveData` | `0x2E8A0C`          | Master Element | 0..1        | Contains data for a compressed archive. **Present if `DataFormat` is "ARCHIVE".** |
+| `ChdData`     | `0x2E8A0D`          | Master Element | 0..1        | Contains data for a CHD collection. **Present if `DataFormat` is "CHD".** |
+| `BinCueData`  | `0x2E8A0E`          | Master Element | 0..1        | Contains data for a BIN/CUE collection. **Present if `DataFormat` is "BIN/CUE".** |
+| `SSMCData`    | `0x2E8A0F`          | Master Element | 0..1        | Contains data for a SpriteShrink MultiCart (.ssmc). **Present if `DataFormat` is "SSMC".** 
 
-##### 3.3.4.1 `RawData` Element (Format: "RAW")
+
+
+##### 3.3.3.1.1 `RawData` Element (Format: "RAW") 
 Stores a single, uncompressed game file.
 
 | Element Name         | Element ID | Type           | Cardinality | Description                                   |
 | :------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `ROMFileSize`        | `0xn`      | Unsigned Int   | 1           | The size of the ROM file in bytes.            |
-| `ROMFileRegion`      | `0xn`      | UTF-8 String   | 1           | The region of this game file.                 |
-| `SupportedLanguage`  | `0xn`      | UTF-8 String   | 0..n        | A supported language by the ROM.              |
-| `CRC32`              | `0xn`      | Binary         | 0..1        | The 4-byte CRC32 hash of the file.            |
-| `MD5`                | `0xn`      | Binary         | 0..1        | The 16-byte MD5 hash of the file.             |
-| `SHA1`               | `0xn`      | Binary         | 0..1        | The 20-byte SHA-1 hash of the file.           |
-| `SHA-256 Hash`       | `0xn`      | Unsigned Int   | 0..1        | The SHA-256 hash of the file.                 |
-| `SHA-512 Hash`       | `0xn`      | Unsigned Int   | 0..1        | The SHA-512 hash of the file.                 |
-| `ROMData`            | `0xn`      | Binary         | 1           | The raw binary data of the game ROM.          |
+| `FileProperties`     | `0x2E8A10` | Master Element | 1           | Contains properties of the file.              |
+| `ROMData`            | `0x1E8AA000`| Binary        | 1           | The raw binary data of the game ROM.          |
 
-##### 3.3.4.2 `ArchiveData` Element (Format: "ARCHIVE")
+**Children of `FileProperties`:**  
+Stores the information for a single ROM. Used by each of the GameDataEntry children Master Elements.
+
+| Element Name         | Element ID | Type           | Cardinality | Description                                   |
+| :------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
+| `ROMFileName`        | `0x1E8A9B07`| UTF-8 String  | 0..1        | The name of the file in the archive (omitted when format is RAW).|
+| `ROMFileSize`        | `0x1E8A9B08`| Unsigned Int  | 1           | The size of the file.                         |
+| `ROMRegion`          | `0x1E8A9B09`| UTF-8 String  | 1           | The region of this game file.                 |
+| `SupportedLanguage`  | `0x1E8A9B0A`| UTF-8 String  | 1..n        | A supported language by the ROM.              |
+| `CRC32`              | `0x1E8A9B0B`| Binary        | 0..1        | The 4-byte CRC32 hash of the file (uncompressed if in archive).|
+| `MD5`                | `0x1E8A9B0C`| Binary        | 0..1        | The 16-byte MD5 hash of the file (uncompressed if in archive).|
+| `SHA1`               | `0x1E8A9B0D`| Binary        | 0..1        | The 20-byte SHA-1 hash of the file (uncompressed if in archive).|
+| `SHA256`             | `0x1E8A9B0E`| Binary        | 0..1        | The SHA-256 hash of the file (uncompressed if in archive).|
+| `SHA512`             | `0x1E8A9B0F`| Binary        | 0..1        | The SHA-512 hash of the file (uncompressed if in archive).|
+| `SSMCIndex`          | `0x1E8A9B10`| Unsigned Int  | 0..1        | The SSMC index of the file.                   |
+
+
+##### 3.3.3.1.2 `ArchiveData` Element (Format: "ARCHIVE")
 Stores a single compressed file (zip, 7z, etc.) that may contain one or multiple ROMs. This allows inspecting archive contents without full decompression.
 
 | Element Name            | Element ID | Type           | Cardinality | Description                               |
 | :---------------------- | :--------- | :------------- | :---------- | :---------------------------------------- |
-| `CompressionAlgorithm`  | `0xn`      | UTF-8 String   | 1           | The compression algorithm (e.g., "zip", "7z"). |
-| `ArchivedFileCount`     | `0xn`      | Unsigned Int   | 1           | The number of files described in the metadata. |
-| `ArchivedFileMetadata`  | `0xn`      | Master Element | 0..n        | Metadata for a single file within the archive. |
-| `ArchiveBinary`         | `0xn`      | Binary         | 1           | The complete binary data of the archive file. |
+| `CompressionAlgorithm`  | `0x1E8A9B11`| UTF-8 String  | 1           | The compression algorithm (e.g., "zip", "7z"). |
+| `ArchivedFileCount`     | `0x1E8A9B12`| Unsigned Int  | 1           | The number of files described in the metadata. |
+| `ArchiveFileMetadata`   | `0x2E8A11` | Master Element | 1..n        | Contains metadata for each archived file.
+| `ArchiveBinary`         | `0x1E8AA001`| Binary        | 1           | The complete binary data of the archive file. |
 
 **Children of `ArchivedFileMetadata`:**
 | Element Name      | Element ID | Type           | Cardinality | Description                           |
 | :---------------- | :--------- | :------------- | :---------- | :------------------------------------ |
-| `ROMFileName`     | `0xn`      | UTF-8 String   | 1           | The full filename within the archive. |
-| `ROMFileSize`     | `0xn`      | Unsigned Int   | 1           | The uncompressed size of the file.    |
-| `ROMFileRegion`   | `0xn`      | UTF-8 String   | 1           | The region of this game file.         |
-| `SupportedLanguage`| `0xn`     | UTF-8 String   | 1..n        | A supported language by the ROM.      |
-| `CRC32`           | `0xn`      | Binary         | 0..1        | The 4-byte CRC32 hash of the file.    |
-| `MD5`             | `0xn`      | Binary         | 0..1        | The 16-byte MD5 hash of the file.     |
-| `SHA1`            | `0xn`      | Binary         | 0..1        | The 20-byte SHA-1 hash of the file.   |
-| `SHA-256 Hash`    | `0xn`      | Unsigned Int   | 0..1        | The SHA-256 hash of the file.         |
-| `SHA-512 Hash`    | `0xn`      | Unsigned Int   | 0..1        | The SHA-512 hash of the file.         |
+| `FileProperties`  | `0x2E8A10` | Master Element | 1           | Contains properties of the file.      |
 
 
-##### 3.3.4.3 `ChdData` Element (Format: "CHD")
+##### 3.3.3.1.3 `ChdData` Element (Format: "CHD")
 Stores a collection of CHD files, typically for multi-disc games.
 
 | Element Name         | Element ID | Type           | Cardinality | Description                                   |
 | :------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `CollectionRegion`   | `0xn`      | UTF-8 String   | 1        | The primary region of this collection.           |
-| `SupportedLanguage`  | `0xn`      | UTF-8 String   | 1..n        | A language supported by this set.             |
-| `CHDCount`           | `0xn`      | Unsigned Int   | 1           | The number of CHD files in this collection.   |
-| `CHDEntry`           | `0xn`      | Master Element | 1..n        | A container for a single CHD file.            |
+| `CollectionRegion`   | `0x1E8A9B13`| UTF-8 String  | 1           | The primary region of this collection.        |
+| `SupportedLanguage`  | `0x1E8A9B0A`| UTF-8 String  | 1..n        | A language supported by this set.             |
+| `CHDCount`           | `0x1E8A9B14`| Unsigned Int  | 1           | The number of CHD files in this collection.   |
+| `CHDEntry`           | `0x2E8A12` | Master Element | 1..n        | A container for a single CHD file.            |
 
 **Children of `CHDEntry`:**
 | Element Name | Element ID | Type           | Cardinality | Description                                   |
 | :----------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `DiscNum`    | `0xn`      | Unsigned Int   | 1           | The disc number for this CHD in the collection. |
-| `CRC32`      | `0xn`      | Binary         | 0..1        | The 4-byte CRC32 hash of the uncompressed data. |
-| `MD5`        | `0xn`      | Binary         | 0..1        | The 16-byte MD5 hash of the uncompressed data.  |
-| `SHA1`       | `0xn`      | Binary         | 0..1        | The 20-byte SHA-1 hash of the uncompressed data.|
-| `SHA-256 Hash`| `0xn`     | Unsigned Int   | 0..1        | The SHA-256 hash of the uncompressed data.    |
-| `SHA-512 Hash`| `0xn`     | Unsigned Int   | 0..1        | The SHA-512 hash of the uncompressed data.    |
-| `CHDBinary`  | `0xn`      | Binary         | 1           | The binary data of the complete .chd file.    |
+| `DiscNum`    | `0x1E8A9B15`| Unsigned Int  | 1           | The disc number for this CHD in the collection. |
+| `FileProperties`| `0x2E8A10`| Master Element| 1          | Contains properties of the uncompressed file. |
+| `CHDBinary`  | `0x1E8AA002`| Binary        | 1           | The binary data of the complete .chd file.    |
 
 
-##### 3.3.4.4 `BinCueData` Element (Format: "BIN/CUE")
+##### 3.3.3.1.4 `BinCueData` Element (Format: "BIN/CUE")
 Stores a collection of BIN/CUE file pairs, typically for multi-disc games.
 
 | Element Name         | Element ID | Type           | Cardinality | Description                                   |
 | :------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `CollectionRegion`   | `0xn`      | UTF-8 String   | 1           | The primary region of this collection.        |
-| `SupportedLanguage`  | `0xn`      | UTF-8 String   | 1..n        | A language supported by this set.             |
-| `BinCueCount`        | `0xn`      | Unsigned Int   | 1           | The number of BIN/CUE pairs in this collection. |
-| `BinCueEntry`        | `0xn`      | Master Element | 1..n        | A container for a single BIN/CUE pair.        |
+| `CollectionRegion`   | `0x1E8A9B13`| UTF-8 String  | 1           | The primary region of this collection.        |
+| `SupportedLanguage`  | `0x1E8A9B0A`| UTF-8 String  | 1..n        | A language supported by this set.             |
+| `BinCueCount`        | `0x1E8A9B16`| Unsigned Int  | 1           | The number of BIN/CUE pairs in this collection. |
+| `BinCueEntry`        | `0x2E8A13` | Master Element | 1..n        | A container for a single BIN/CUE pair.        |
 
 **Children of `BinCueEntry`:**
 | Element Name  | Element ID | Type           | Cardinality | Description                                   |
 | :------------ | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `DiscNum`     | `0xn`      | Unsigned Int   | 1           | The disc number for this BIN file.            |
-| `CueSheet`    | `0xn`      | UTF-8 String   | 1           | The full text content of the .cue sheet.      |
-| `CRC32`       | `0xn`      | Binary         | 0..1        | The 4-byte CRC32 hash of the .bin file.       |
-| `MD5`         | `0xn`      | Binary         | 0..1        | The 16-byte MD5 hash of the .bin file.        |
-| `SHA1`        | `0xn`      | Binary         | 0..1        | The 20-byte SHA-1 hash of the .bin file.      |
-| `SHA-256 Hash`| `0xn`      | Unsigned Int   | 0..1        | The SHA-256 hash of the file.                 |
-| `SHA-512 Hash`| `0xn`      | Unsigned Int   | 0..1        | The SHA-512 hash of the file.                 |
-| `BinBinary`   | `0xn`      | Binary         | 1           | The binary data of the complete .bin file.    |
+| `DiscNum`     | `0x1E8A9B15`| Unsigned Int  | 1           | The disc number for this BIN file.            |
+| `CueSheet`    | `0x1E8A9B17`| UTF-8 String  | 1           | The full text content of the .cue sheet.      |
+| `FileProperties`| `0x2E8A10`| Master Element| 1           | Contains properties of a bin/cue pair.        |
+| `BinBinary`   | `0x1E8AA003`| Binary        | 1           | The binary data of the complete .bin file.    |
 
-##### 3.3.4.5 `SSMCData` Element (Format: "SSMC")
+
+##### 3.3.3.1.5 `SSMCData` Element (Format: "SSMC")
 Stores the metadata of an SpriteShrink MultiCart archive, typically contains all regsions and revisions of a single game.
 
 | Element Name         | Element ID | Type           | Cardinality | Description                                   |
 | :------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `ArchivedFileCount`  | `0xn`      | Unsigned Int   | 1           | The number of files described in the metadata.|
-| `SSMCEntry`          | `0xn`      | Master Element | 1..n        | Metadata for a file in the .ssmc file.        |
-| `SSMCBinary`         | `0xn`      | Binary         | 1           | The complete binary data of the .ssmc file.   |
+| `ArchivedFileCount`  | `0x1E8A9B12`| Unsigned Int  | 1           | The number of files described in the metadata.|
+| `SSMCEntry`          | `0x2E8A14` | Master Element | 1..n        | Metadata for a file in the .ssmc file.        |
+| `SSMCBinary`         | `0x1E8AA004`| Binary        | 1           | The complete binary data of the .ssmc file.   |
 
-**Children of `BinCueEntry`:**
+**Children of `SSMCEntry`:**
 | Element Name  | Element ID | Type           | Cardinality | Description                                   |
 | :------------ | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `ROMFileName` | `0xn`      | UTF-8 String   | 1           | The full filename within the archive.         |
-| `ROMFileSize` | `0xn`      | Unsigned Int   | 1           | The uncompressed size of the file.            |
-| `ROMFileRegion`| `0xn`     | UTF-8 String   | 1           | The region of this game file.                 |
-| `SupportedLanguage`| `0xn` | UTF-8 String   | 1..n        | A language supported by this set.             |
-| `ROMFileIndex`| `0xn`      | Unsigned Int   | 1           | The index of the file in the .ssmc data.      |
-| `CRC32`       | `0xn`      | Binary         | 0..1        | The 4-byte CRC32 hash of the compressed file. |
-| `MD5`         | `0xn`      | Binary         | 0..1        | The 16-byte MD5 hash of the compressed file.  |
-| `SHA1`        | `0xn`      | Binary         | 0..1        | The 20-byte SHA-1 hash of the file.           |
-| `SHA-256 Hash`| `0xn`      | Unsigned Int   | 0..1        | The SHA-256 hash of the file.                 |
-| `SHA-512 Hash`| `0xn`      | Unsigned Int   | 0..1        | The SHA-512 hash of the file.                 |
+| `FileProperties`| `0x2E8A10`| Master Element| 1           | Contains properties of a file in the archive. |
+
 
 #### 3.4 `Manuals` Element
 
 | Element Name         | Element ID | Type           | Cardinality | Description                                   |
 | :------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `ManualEntry`        | `0xn`      | Master Element | 1..n        | Contains data for a single manual.            |
+| `ManualEntry`        | `0x2E8A15` | Master Element | 1..n        | Contains data for a single manual.            |
 
-**Children of `ManualEntry`:**
+#### 3.4.1 `ManualEntry` Element
 | Element Name  | Element ID | Type           | Cardinality | Description                                   |
 | :------------ | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `Region`      | `0xn`      | UTF-8 String   | 1           | Region where the manual was printed.          |
-| `Language`    | `0xn`      | UTF-8 String   | 1..n        | A language supported by the manual.           |
-| `Page Count`  | `0xn`      | Unsigned Int   | 1           | The amount of pages the manual contains.      |
-| `Revision`    | `0xn`      | UTF-8 String   | 1           | The revision number(s)/letter(s) of the manual.|
-| `PDFData`     | `0xn`      | Binary         | 0..1        | The PDF binary data of the manual.            |
-| `CBZData`     | `0xn`      | Binary         | 0..1        | The CBZ binary data of the manual.            |
-| `CBRData`     | `0xn`      | Binary         | 0..1        | The CBR binary data of the manual.            |
+| `Region`      | `0x1E8A9B02`| UTF-8 String  | 1           | Region where the manual was printed.          |
+| `Language`    | `0x1E8A9B03`| UTF-8 String  | 1..n        | A language supported by the manual.           |
+| `PageCount`   | `0x1E8A9B1A`| Unsigned Int  | 1           | The amount of pages the manual contains.      |
+| `Revision`    | `0x1E8A9B1B`| UTF-8 String  | 1           | The revision number(s)/letter(s) of the manual.|
+| `ManualFormat`| `0x1E8A9B1C`| UTF-8 String  | 1           | The format of the manual (e.g., PDF, CBZ).    |
+| `ManualData`  | `0x1E8AA005`| Binary Data   | 1           | The raw binary data of the manual file.       |
+
 
 #### 3.5 `RomHacks` Element
 
 | Element Name         | Element ID | Type           | Cardinality | Description                                   |
 | :------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| 
+| `RomHackEntry`       | `0x2E8A16` | Master Element | 0..n        | Contains a single rom hack and its metadata.  |
+
+#### 3.5.1 `ROMHackEntry` Element
+| Element Name  | Element ID | Type           | Cardinality | Description                                   |
+| :------------ | :--------- | :------------- | :---------- | :-------------------------------------------- |
+| `HackTitle`   | `0x1E8A9B1D`| UTF-8 String   | 1           | The title of the rom hack.                    |
+| `HackAuthor`  | `0x1E8A9B1E`| UTF-8 String   | 0..n        | The author of the rom hack.                   |
+| `HackVersion` | `0x1E8A9B1F`| UTF-8 String   | 0..1        | The version of the rom hack.                  |
+| `PatchFormat` | `0x1E8A9B20`| UTF-8 String   | 0..1        | The format of the patch file (e.g., "IPS", "BPS", "UPS").|
+| `TargetHash`  | `0x2E8A17`  | Master Element | 0..n        | The hash of the target game ROM.              |
+| `HackDescription`| `0x1E8A9B21`| UTF-8 String| 0..1        | A description of the rom hack.                |
+| `PatchData`   | `0x1E8AA006`| Binary         | 0..n        | The binary data of the patch file.            |
+
+**Children of `TargetHash`:**
+| Element Name  | Element ID | Type           | Cardinality | Description                                   |
+| :------------ | :--------- | :------------- | :---------- | :-------------------------------------------- |
+| `HashFormat`  | `0x1E8A9B22`| UTF-8 String  | 0..n        | The format of the hash (e.g., "CRC32", "MD5", "SHA1").|
+| `HashValue`   | `0x1E8A9B23`| Binary        | 1           | The binary hash data.                         |
+
 
 #### 3.6 `Media` Element
+| Element Name         | Element ID | Type           | Cardinality | Description                             |
+| :------------------- | :--------- | :------------- | :---------- | :---------------------------------------|
+| `ImageCollection`    | `0x2E8A18` | Master Element | 0..n        | Contains a collection of related images.|
+| `VideoCollection`    | `0x2E8A1A` | Master Element | 0..n        | Contains a collection of related videos.|
 
-| Element Name         | Element ID | Type           | Cardinality | Description                                   |
-| :------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `FanArt`             | `0xn`      | Master Element | 0..1        |  Contains fan art for the subject game of this file.|
+**Children of `ImageCollection`:**
+| Element Name  | Element ID | Type           | Cardinality | Description                                   |
+| :------------ | :--------- | :------------- | :---------- | :-------------------------------------------- |
+| `Category`    | `0x1E8A9B24`| UTF-8 String  | 1           | Category of images (Example values: "BoxArt (Front)", "BoxArt (Back)", "Cartridge", "Disc Art", "FanArt", "Clear Logo", "Screenshot").|
+| `ImageEntry`  | `0x2E8A19`| Master Element  | 1..n        | Container for a single image.                 |
+
+**Children of `ImageEntry`:**
+| Element Name  | Element ID | Type           | Cardinality | Description                                   |
+| :------------ | :--------- | :------------- | :---------- | :-------------------------------------------- |
+| `ImageTitle`  | `0x1E8A9B25`| UTF-8 String  | 0..1        | A title for the image.                        |
+| `Artist`      | `0x1E8A9B26`| UTF-8 String  | 0..n        | The creator(s) of the artwork.                |
+| `Region`      | `0x1E8A9B27`| UTF-8 String  | 0..1        | The specific region for this image, if applicable (e.g., "USA" for box art).|
+| `ImageFormat` | `0x1E8A9B28`| UTF-8 String  | 1           | The format of the image data (e.g., "PNG", "JPEG", "WEBP").|
+| `Width`       | `0x1E8A9B29`| Unsigned Int  | 1           | The width of the image in pixels.             |
+| `Height`      | `0x1E8A9B2A`| Unsigned Int  | 1           | The height of the image in pixels.            |
+| `ImageData`   | `0x1E8AA007`| Binary        | 1           | The raw binary data of the image.             |
+
+**Children of `VideoCollection`:**
+| Element Name  | Element ID | Type           | Cardinality | Description                                   |
+| :------------ | :--------- | :------------- | :---------- | :-------------------------------------------- |
+| `Category`    | `0x1E8A9B24`| UTF-8         | 1           | Category of videos (e.g. trailer, gameplay video, etc.)|
+| `VideoEntry`  | `0x2E8A1B` | Master Element | 1..n        | Container for a single video.                 |
+
+**Children of `VideoEntry`:**
+| Element Name  | Element ID | Type           | Cardinality | Description                                   |
+| :------------ | :--------- | :------------- | :---------- | :-------------------------------------------- |
+| `VideoTitle`  | `0x1E8A9B2B`| UTF-8 String  | 0..1        | A title for the video.                        |
+| `Language`    | `0x1E8A9B2C`| UTF-8 String  | 0..n        | The language of the video.                    |
+| `Duration`    | `0x1E8A9B2D`| Unsigned Int  | 1           | The duration of the video in milliseconds.    |
+| `VideoFormat` | `0x1E8A9B2E`| UTF-8 String  | 1           | The container format of the video (e.g., MP4, AVI, MKV).|
+| `Width`       | `0x1E8A9B29`| Unsigned Int  | 1           | The width of the video in pixels.             |
+| `Height`      | `0x1E8A9B2A`| Unsigned Int  | 1           | The height of the video in pixels.            |
+| `Thumbnail`   | `0x1E8AA008`| Binary        | 0..1        | A thumbnail image of the video.               |
+| `VideoData`   | `0x1E8AA009`| Binary        | 1           | The raw binary data of the video file.        |
+
+---
 
 
 ---
@@ -343,5 +393,5 @@ A VINT is a method of encoding an integer into a variable number of bytes. The n
 
 | Version | Date       | Author(s) | Summary of Changes                               |
 | :------ | :--------- | :-------- | :----------------------------------------------- |
-| 1.0     | 2023-10-27 | [Your Name] | Initial version of the specification.            |
+| 1.0     | 2025-07-16 | Tyler Bibeault | Initial version of the specification.       |
 
