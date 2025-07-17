@@ -47,9 +47,6 @@ EBML File
 +-- GameCase (Master Element)
     |
     |
-    +-- GameCaseVersion (Mandatory)
-    |
-    |
     +-- Index (Master Element)
     |   |
     |   +-- Index Entry 1 (Master Element)
@@ -145,7 +142,6 @@ This element acts as the main container for the rest of the file's data.
 | `Manuals`             | `0x5B03`   | Master Element | 0..1        | Contains game manuals in various formats.     |
 | `RomHacks`            | `0x5B04`   | Master Element | 0..1        | Contains rom hack patches and related metadata.|
 | `Media`               | `0x5B05`   | Master Element | 0..1        | Contains contains various media of the subject game of this file.|
-| `GameCaseVersion`     | `0x5B06`   | Unsigned Int   | 1           | Contains the version of the GameCase format.  |
 
 
 #### 3.3 `Index` Element
