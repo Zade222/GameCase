@@ -137,7 +137,7 @@ This element acts as the main container for the rest of the file's data.
 ##### **Children of `GameCase`:**
 | Element Name          | Element ID | Type           | Cardinality | Description                                   |
 | :-------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `Index`               | `0x5B01`   | Master Element | 0..1        | Contains pointers for fast seeking. **Must be the first child.**|
+| `Index`               | `0x5B01`   | Master Element | 1           | Contains pointers for fast seeking. **Must be the first child.**|
 | `Game`                | `0x5B02`   | Master Element | 1           | Contains metadata about the file content.     |
 | `Manuals`             | `0x5B03`   | Master Element | 0..1        | Contains game manuals in various formats.     |
 | `RomHacks`            | `0x5B04`   | Master Element | 0..1        | Contains rom hack patches and related metadata.|
@@ -149,12 +149,12 @@ The `Index` element is used to provide pointers for fast seeking within the file
 
 | Element Name          | Element ID | Type           | Cardinality | Description                                   |
 | :-------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `IndexEntry`          | `0x5B01`   | Master Element | 1..n        | Contains a single index entry pointing to a top-level element.|
+| `IndexEntry`          | `0x5B06`   | Master Element | 1..n        | Contains a single index entry pointing to a top-level element.|
 
 ##### **Children of `IndexEntry`:**
 | Element Name          | Element ID | Type           | Cardinality | Description                                   |
 | :-------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `IndexTargetID`       | `0x5B07`   | Binary         | 1           | The Element ID of the element being pointed to (e.g., the ID for Title). Stored as binary to preserve the VINT encoding.|
+| `IndexTargetID`       | `0x5B07`   | Unsigned Int   | 1           | The Element ID of the target element being indexed.|
 | `IndexPosition`       | `0x5B08`   | Unsigned Int   | 1           | The byte offset of the target element from the start of the GameCase element.|
 | `IndexTarget`         | `0x5B09`   | UTF-8 String   | 1           | The type of content, e.g., "GameData", "Manual", "FanArt", "Video", "BoxArt". |
 | `IndexTargetCategory` | `0x5B0A`   | UTF-8 String   | 0..1        | A specific category, e.g., "Front" or "Back" for BoxArt; "Gameplay" for Video. |
@@ -212,6 +212,7 @@ This is a self-contained entry for a game's binary data. The `DataFormat` elemen
 
 | Element Name          | Element ID          | Type           | Cardinality | Description                          |
 | :-------------------- | :------------------ | :------------- | :---------- | :----------------------------------- |
+| `EntryUID`            | `0x5B0D`            | Unsigned Int   | 1           | A unique identifier for this entry within the file, used to link it to an `IndexEntry`. |
 | `DataFormat`          | `0x2E8A0A`          | UTF-8 String   | 1           | Declares the format of the data. Must be one of: "RAW", "ARCHIVE", "CHD", "BIN/CUE", "SSMC". Case sensitive. |
 | `RawData`             | `0x2E8A0B`          | Master Element | 0..1        | Contains data for a single raw game file. **Present if `DataFormat` is "RAW".** |
 | `ArchiveData`         | `0x2E8A0C`          | Master Element | 0..1        | Contains data for a compressed archive. **Present if `DataFormat` is "ARCHIVE".** |
@@ -233,10 +234,10 @@ Stores the information for a single ROM. Used by each of the GameDataEntry child
 
 | Element Name          | Element ID | Type           | Cardinality | Description                                   |
 | :-------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `ROMFileName`         | `0x1E8A9B07`| UTF-8 String  | 0..1        | The name of the file in the archive (omitted when format is RAW).|
+| `ROMFileName`         | `0x1E8A9B07`| UTF-8 String  | 0..1        | The name of the file in the archive (omitted when format is RAW, mandatory for archives).|
 | `ROMFileSize`         | `0x1E8A9B08`| Unsigned Int  | 1           | The size of the file.                         |
-| `ROMRegion`           | `0x1E8A9B09`| UTF-8 String  | 1           | The region of this game file.                 |
-| `SupportedLanguage`   | `0x1E8A9B0A`| UTF-8 String  | 1..n        | A supported language by the ROM.              |
+| `Region`              | `0x1E8A9B02`| UTF-8 String  | 1           | The region of this game file.                 |
+| `Language`            | `0x1E8A9B03`| UTF-8 String  | 1..n        | A supported language by the ROM.              |
 | `CRC32`               | `0x1E8A9B0B`| Binary        | 0..1        | The 4-byte CRC32 hash of the file (uncompressed if in archive).|
 | `MD5`                 | `0x1E8A9B0C`| Binary        | 0..1        | The 16-byte MD5 hash of the file (uncompressed if in archive).|
 | `SHA1`                | `0x1E8A9B0D`| Binary        | 0..1        | The 20-byte SHA-1 hash of the file (uncompressed if in archive).|
@@ -250,7 +251,7 @@ Stores a single compressed file (zip, 7z, etc.) that may contain one or multiple
 
 | Element Name          | Element ID | Type           | Cardinality | Description                                   |
 | :-------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `CompressionAlgorithm`| `0x1E8A9B11`| UTF-8 String | 1           | The compression algorithm (e.g., "zip", "7z"). |
+| `CompressionAlgorithm`| `0x1E8A9B11`| UTF-8 String  | 1           | The compression algorithm (e.g., "zip", "7z"). |
 | `ArchivedFileCount`   | `0x1E8A9B12`| Unsigned Int  | 1           | The number of files described in the metadata. |
 | `ArchiveFileMetadata` | `0x2E8A11` | Master Element | 1..n        | Contains metadata for each archived file.
 | `ArchiveBinary`       | `0x1E8AA001`| Binary        | 1           | The complete binary data of the archive file. |
@@ -266,8 +267,8 @@ Stores a collection of CHD files, typically for multi-disc games.
 
 | Element Name          | Element ID | Type           | Cardinality | Description                                   |
 | :-------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `CollectionRegion`    | `0x1E8A9B13`| UTF-8 String  | 1           | The primary region of this collection.        |
-| `SupportedLanguage`   | `0x1E8A9B0A`| UTF-8 String  | 1..n        | A language supported by this set.             |
+| `Region`              | `0x1E8A9B02`| UTF-8 String  | 1           | The primary region of this collection. Region defined at this level applies to the entire collection. If a child entry via FileProperties defines its own conflicting metadata, the child's metadata should be considered authoritative for that specific entry.|
+| `Language`            | `0x1E8A9B03`| UTF-8 String  | 1..n        | A language supported by this set. Language defined at this level applies to the entire collection. If a child entry via FileProperties defines its own conflicting metadata, the child's metadata should be considered authoritative for that specific entry.|
 | `CHDCount`            | `0x1E8A9B14`| Unsigned Int  | 1           | The number of CHD files in this collection.   |
 | `CHDEntry`            | `0x2E8A12` | Master Element | 1..n        | A container for a single CHD file.            |
 
@@ -284,8 +285,8 @@ Stores a collection of BIN/CUE file pairs, typically for multi-disc games.
 
 | Element Name          | Element ID | Type           | Cardinality | Description                                   |
 | :-------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `CollectionRegion`    | `0x1E8A9B13`| UTF-8 String  | 1           | The primary region of this collection.        |
-| `SupportedLanguage`   | `0x1E8A9B0A`| UTF-8 String  | 1..n        | A language supported by this set.             |
+| `Region`              | `0x1E8A9B02`| UTF-8 String  | 1           | The primary region of this collection.        |
+| `Language`            | `0x1E8A9B03`| UTF-8 String  | 1..n        | A language supported by this set.             |
 | `BinCueCount`         | `0x1E8A9B16`| Unsigned Int  | 1           | The number of BIN/CUE pairs in this collection. |
 | `BinCueEntry`         | `0x2E8A13` | Master Element | 1..n        | A container for a single BIN/CUE pair.        |
 
@@ -322,6 +323,7 @@ Stores the metadata of an SpriteShrink MultiCart archive, typically contains all
 #### 3.5.1 `ManualEntry` Element
 | Element Name          | Element ID | Type           | Cardinality | Description                                   |
 | :-------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
+| `EntryUID`            | `0x5B0D`   | Unsigned Int   | 1           | A unique identifier for this entry within the file, used to link it to an `IndexEntry`. |
 | `Region`              | `0x1E8A9B02`| UTF-8 String  | 1           | Region where the manual was printed.          |
 | `Language`            | `0x1E8A9B03`| UTF-8 String  | 1..n        | A language supported by the manual.           |
 | `PageCount`           | `0x1E8A9B1A`| Unsigned Int  | 1           | The amount of pages the manual contains.      |
@@ -339,18 +341,19 @@ Stores the metadata of an SpriteShrink MultiCart archive, typically contains all
 #### 3.6.1 `ROMHackEntry` Element
 | Element Name          | Element ID | Type           | Cardinality | Description                                   |
 | :-------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
+| `EntryUID`            | `0x5B0D`   | Unsigned Int   | 1           | A unique identifier for this entry within the file, used to link it to an `IndexEntry`. |
 | `Title`               | `0x2E8A00` | UTF-8 String  | 1           | The title of the rom hack.                    |
 | `Developer`           | `0x2E8A01` | UTF-8 String  | 0..n        | The author of the rom hack.                   |
 | `HackVersion`         | `0x1E8A9B1F`| UTF-8 String  | 0..1        | The version of the rom hack.                  |
 | `PatchFormat`         | `0x1E8A9B20`| UTF-8 String  | 0..1        | The format of the patch file (e.g., "IPS", "BPS", "UPS").|
 | `TargetHash`          | `0x2E8A17`  | Master Element| 0..n        | The hash of the target game ROM.              |
 | `HackDescription`     | `0x1E8A9B21`| UTF-8 String  | 0..1        | A description of the rom hack.                |
-| `PatchData`           | `0x1E8AA006`| Binary        | 0..n        | The binary data of the patch file.            |
+| `PatchData`           | `0x1E8AA006`| Binary        | 1           | The binary data of the patch file.            |
 
 **Children of `TargetHash`:**
 | Element Name          | Element ID | Type           | Cardinality | Description                                   |
 | :-------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `HashFormat`          | `0x1E8A9B22`| UTF-8 String  | 0..n        | The format of the hash (e.g., "CRC32", "MD5", "SHA1").|
+| `HashFormat`          | `0x1E8A9B22`| UTF-8 String  | 1           | The format of the hash (e.g., "CRC32", "MD5", "SHA1").|
 | `HashValue`           | `0x1E8A9B23`| Binary        | 1           | The binary hash data.                         |
 
 
@@ -363,18 +366,20 @@ Stores the metadata of an SpriteShrink MultiCart archive, typically contains all
 **Children of `ImageCollection`:**
 | Element Name          | Element ID | Type           | Cardinality | Description                                   |
 | :-------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
-| `Category`            | `0x1E8A9B24`| UTF-8 String  | 1           | Category of images (Example values: "BoxArt (Front)", "BoxArt (Back)", "Cartridge", "Disc Art", "FanArt", "Clear Logo", "Screenshot").|
+| `Category`            | `0x1E8A9B24`| UTF-8 String  | 1           | Category of images (Example values: "BoxArt", "Cartridge", "Disc Art", "FanArt", "Clear Logo", "Screenshot").|
 | `ImageEntry`          | `0x2E8A19`| Master Element  | 1..n        | Container for a single image.                 |
 
 **Children of `ImageEntry`:**
 | Element Name          | Element ID | Type           | Cardinality | Description                                   |
 | :-------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
+| `EntryUID`            | `0x5B0D`   | Unsigned Int   | 1           | A unique identifier for this entry within the file, used to link it to an `IndexEntry`. |
 | `ImageTitle`          | `0x1E8A9B25`| UTF-8 String  | 0..1        | A title for the image.                        |
 | `Artist`              | `0x1E8A9B26`| UTF-8 String  | 0..n        | The creator(s) of the artwork.                |
-| `Region`              | `0x1E8A9B27`| UTF-8 String  | 0..1        | The specific region for this image, if applicable (e.g., "USA" for box art).|
+| `Region`              | `0x1E8A9B02`| UTF-8 String  | 0..1        | The specific region for this image, if applicable (e.g., "USA" for box art).|
 | `ImageFormat`         | `0x1E8A9B28`| UTF-8 String  | 1           | The format of the image data (e.g., "PNG", "JPEG", "WEBP").|
 | `Width`               | `0x1E8A9B29`| Unsigned Int  | 1           | The width of the image in pixels.             |
 | `Height`              | `0x1E8A9B2A`| Unsigned Int  | 1           | The height of the image in pixels.            |
+| `CategoryDetail`      | `0x1E8A9B2F`| UTF-8 String  | 0..1        | Additional details about the category. (e.g. box art front, box art back)|
 | `ImageData`           | `0x1E8AA007`| Binary        | 1           | The raw binary data of the image.             |
 
 **Children of `VideoCollection`:**
@@ -386,8 +391,9 @@ Stores the metadata of an SpriteShrink MultiCart archive, typically contains all
 **Children of `VideoEntry`:**
 | Element Name          | Element ID | Type           | Cardinality | Description                                   |
 | :-------------------- | :--------- | :------------- | :---------- | :-------------------------------------------- |
+| `EntryUID`            | `0x5B0D`   | Unsigned Int   | 1           | A unique identifier for this entry within the file, used to link it to an `IndexEntry`. |
 | `VideoTitle`          | `0x1E8A9B2B`| UTF-8 String  | 0..1        | A title for the video.                        |
-| `Language`            | `0x1E8A9B2C`| UTF-8 String  | 0..n        | The language of the video.                    |
+| `Language`            | `0x1E8A9B03`| UTF-8 String  | 0..n        | The language of the video.                    |
 | `Duration`            | `0x1E8A9B2D`| Unsigned Int  | 1           | The duration of the video in milliseconds.    |
 | `VideoFormat`         | `0x1E8A9B2E`| UTF-8 String  | 1           | The container format of the video (e.g., MP4, AVI, MKV).|
 | `Width`               | `0x1E8A9B29`| Unsigned Int  | 1           | The width of the video in pixels.             |
