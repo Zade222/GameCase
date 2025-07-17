@@ -21,6 +21,8 @@ The GameCase format is designed to be comprehensive, supporting a wide array of 
 * **Game Manuals:**
     * Embed digital copies of game manuals in various formats (e.g., PDF, CBZ).
     * Include metadata for each manual, such as region, language, and revision number.
+* **Optimized for Fast Access:** 
+    * Includes an index for fast seeking of content within the file. This is especially useful for accessing files on slow media or over a network transfer.
 * **Media Collections:**
     * Store related media like box art (front, back), cartridge/disc images, fan art, and screenshots.
     * Embed video content such as trailers and gameplay clips.
