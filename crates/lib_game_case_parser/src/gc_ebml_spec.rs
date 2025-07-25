@@ -203,13 +203,13 @@ pub enum GCEbmlSpec {
     #[data_type(TagDataType::UnsignedInt)]
     ROMFileSize,
 
-    /* Region already declared and is used here.
+    /* Region already declared and is reused here.
     #[id(0x1E8A9B02)]
     #[data_type(TagDataType::Utf8)]
     Region,
     */
 
-    /*Language already declared and is used here.
+    /*Language already declared and is reused here.
     #[id(0x1E8A9B03)]
     #[data_type(TagDataType::Utf8)]
     Language,
@@ -240,5 +240,174 @@ pub enum GCEbmlSpec {
     SSMCIndex,
 
     /*Children of ArchiveData */
+    #[id(0x1E8A9B11)]
+    #[data_type(TagDataType::Utf8)]
+    CompressionAlgorithm,
+
+    #[id(0x1E8A9B12)]
+    #[data_type(TagDataType::UnsignedInt)]
+    ArchivedFileCount,
+
+    #[id(0x2E8A11)]
+    #[data_type(TagDataType::Master)]
+    ArchiveFileMetadata,
+
+    #[id(0x1E8AA001)]
+    #[data_type(TagDataType::Binary)]
+    ArchiveBinary,
+
+    /*Children of ArchivedFileMetadata */
+    /*FileProperties already declared and is reused here.
+    #[id(0x2E8A10)]
+    #[data_type(TagDataType::Master)]
+    FileProperties, 
+    */
+
+    /*Children of ChdData */
+    /* Region already declared and is reused here.
+    #[id(0x1E8A9B02)]
+    #[data_type(TagDataType::Utf8)]
+    Region,
+    */
+
+    /*Language already declared and is reused here.
+    #[id(0x1E8A9B03)]
+    #[data_type(TagDataType::Utf8)]
+    Language,
+    */
+
+    #[id(0x1E8A9B14)]
+    #[data_type(TagDataType::UnsignedInt)]
+    CHDCount,
+
+    #[id(0x2E8A12)]
+    #[data_type(TagDataType::Master)]
+    CHDEntry,
+
+    /*Children of CHDEntry */
+    #[id(0x1E8A9B15)]
+    #[data_type(TagDataType::UnsignedInt)]
+    DiscNum,
+
+    /*FileProperties already declared and is reused here.
+    #[id(0x2E8A10)]
+    #[data_type(TagDataType::Master)]
+    FileProperties, 
+    */
+
+    #[id(0x1E8AA002)]
+    #[data_type(TagDataType::Binary)]
+    CHDBinary,
+
+    /*Children of BinCueData */
+    /* Region already declared and is reused here.
+    #[id(0x1E8A9B02)]
+    #[data_type(TagDataType::Utf8)]
+    Region,
+    */
+
+    /*Language already declared and is reused here.
+    #[id(0x1E8A9B03)]
+    #[data_type(TagDataType::Utf8)]
+    Language,
+    */
+
+    #[id(0x1E8A9B16)]
+    #[data_type(TagDataType::UnsignedInt)]
+    BinCueCount,
+
+    #[id(0x2E8A13)]
+    #[data_type(TagDataType::Master)]
+    BinCueEntry,
+
+    /*Children of BinCueEntry */
+    /*DiscNum already declared and is reused here.
+    #[id(0x1E8A9B15)]
+    #[data_type(TagDataType::UnsignedInt)]
+    DiscNum,
+    */
+
+    #[id(0x1E8A9B17)]
+    #[data_type(TagDataType::Utf8)]
+    CueSheet,
+
+    /*FileProperties already declared and is reused here.
+    #[id(0x2E8A10)]
+    #[data_type(TagDataType::Master)]
+    FileProperties, 
+    */
+
+    #[id(0x1E8AA003)]
+    #[data_type(TagDataType::Binary)]
+    BinBinary,
+
+    /*Children of SSMCData */
+    /*ArchivedFileCount already declared and is reused here.
+    #[id(0x1E8A9B12)]
+    #[data_type(TagDataType::UnsignedInt)]
+    ArchivedFileCount,
+    */
+
+    #[id(0x2E8A14)]
+    #[data_type(TagDataType::Master)]
+    SSMCEntry,
+
+    #[id(0x1E8AA004)]
+    #[data_type(TagDataType::Binary)]
+    SSMCBinary,
+
+    /*Children of SSMCEntry */
+    /*FileProperties already declared and is reused here.
+    #[id(0x2E8A10)]
+    #[data_type(TagDataType::Master)]
+    FileProperties, 
+    */
+
+    /*Manuals Element */
+    #[id(0x2E8A15)]
+    #[data_type(TagDataType::Master)]
+    ManualEntry,
+
+    /*Children of ManualEntry */
+    /*EntryUID already declared and is reused here.
+    #[id(0x5B0D)]
+    #[data_type(TagDataType::UnsignedInt)]
+    EntryUID,
+    */
+
+    /* Region already declared and is reused here.
+    #[id(0x1E8A9B02)]
+    #[data_type(TagDataType::Utf8)]
+    Region,
+    */
+
+    /*Language already declared and is reused here.
+    #[id(0x1E8A9B03)]
+    #[data_type(TagDataType::Utf8)]
+    Language,
+    */
+
+    #[id(0x1E8A9B1A)]
+    #[data_type(TagDataType::UnsignedInt)]
+    PageCount,
+
+    #[id(0x1E8A9B1B)]
+    #[data_type(TagDataType::Utf8)]
+    Revision,
+
+    #[id(0x1E8A9B1C)]
+    #[data_type(TagDataType::Utf8)]
+    ManualFormat,
+
+    #[id(0x1E8AA005)]
+    #[data_type(TagDataType::Binary)]
+    ManualData,
+
+    /*RomHacks Element */
+    #[id(0x2E8A16)]
+    #[data_type(TagDataType::Master)]
+    RomHackEntry,
+
+    /*Children of RomHackEntry */
     
 }
