@@ -1,6 +1,6 @@
-[package]
-name = "GameCase"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
+[workspace]
+resolver = "3"
+members = [
+    "crates/boxer_application",
+    "crates/lib_game_case_parser",
+]

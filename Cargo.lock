@@ -3,5 +3,9 @@
 version = 4
 
 [[package]]
-name = "GameCase"
+name = "boxer_application"
+version = "0.1.0"
+
+[[package]]
+name = "game_case_parser"
 version = "0.1.0"

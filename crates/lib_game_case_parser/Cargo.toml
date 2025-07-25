@@ -1,0 +1,10 @@
+[package]
+name = "game_case_parser"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "game_case_parser"
+crate-type = ["rlib", "staticlib"]
+
+[dependencies]
