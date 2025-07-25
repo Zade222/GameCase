@@ -8,3 +8,4 @@ name = "game_case_parser"
 crate-type = ["rlib", "staticlib"]
 
 [dependencies]
+ebml-iterable = { version = "0.6.3", features = ["derive-spec"] }
