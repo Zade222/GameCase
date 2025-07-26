@@ -398,6 +398,7 @@ Stores the metadata of an SpriteShrink MultiCart archive, typically contains all
 | `VideoFormat`         | `0x1E8A9B2E`| UTF-8 String  | 1           | The container format of the video (e.g., MP4, AVI, MKV).|
 | `Width`               | `0x1E8A9B29`| Unsigned Int  | 1           | The width of the video in pixels.             |
 | `Height`              | `0x1E8A9B2A`| Unsigned Int  | 1           | The height of the video in pixels.            |
+| `ImageFormat`         | `0x1E8A9B28`| UTF-8 String  | 1           | The format of the image data (e.g., "PNG", "JPEG", "WEBP").|
 | `Thumbnail`           | `0x1E8AA008`| Binary        | 0..1        | A thumbnail image of the video.               |
 | `VideoData`           | `0x1E8AA009`| Binary        | 1           | The raw binary data of the video file.        |
 

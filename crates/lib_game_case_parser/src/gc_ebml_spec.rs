@@ -375,7 +375,7 @@ pub enum GCEbmlSpec {
     EntryUID,
     */
 
-    /* Region already declared and is reused here.
+    /*Region already declared and is reused here.
     #[id(0x1E8A9B02)]
     #[data_type(TagDataType::Utf8)]
     Region,
@@ -409,5 +409,173 @@ pub enum GCEbmlSpec {
     RomHackEntry,
 
     /*Children of RomHackEntry */
-    
+    /*EntryUID already declared and is reused here.
+    #[id(0x5B0D)]
+    #[data_type(TagDataType::UnsignedInt)]
+    EntryUID,
+    */
+
+    /*Title already declared and is reused here.
+    #[id(0x2E8A00)]
+    #[data_type(TagDataType::Utf8)]
+    Title,
+    */
+
+    /*Developer already declared and is reused here.
+    #[id(0x2E8A01)]
+    #[data_type(TagDataType::Utf8)]
+    Developer,
+    */
+
+    #[id(0x1E8A9B1F)]
+    #[data_type(TagDataType::Utf8)]
+    HackVersion,
+
+    #[id(0x1E8A9B20)]
+    #[data_type(TagDataType::Utf8)]
+    PatchFormat,
+
+    #[id(0x2E8A17)]
+    #[data_type(TagDataType::Master)]
+    TargetHash,
+
+    #[id(0x1E8A9B21)]
+    #[data_type(TagDataType::Utf8)]
+    HackDescription,
+
+    #[id(0x1E8AA006)]
+    #[data_type(TagDataType::Binary)]
+    PatchData,
+
+    /*Children of TargetHash */
+    #[id(0x1E8A9B22)]
+    #[data_type(TagDataType::Utf8)]
+    HashFormat,
+
+    #[id(0x1E8A9B23)]
+    #[data_type(TagDataType::Binary)]
+    HashValue,
+
+    /*Media Element */
+    #[id(0x2E8A18)]
+    #[data_type(TagDataType::Master)]
+    ImageCollection,
+
+    #[id(0x2E8A1A)]
+    #[data_type(TagDataType::Master)]
+    VideoCollection,
+
+    /*Children of ImageCollection */
+    #[id(0x1E8A9B24)]
+    #[data_type(TagDataType::Utf8)]
+    Category,
+
+    #[id(0x2E8A19)]
+    #[data_type(TagDataType::Master)]
+    ImageEntry,
+
+    /*Children of ImageEntry */
+    /*EntryUID already declared and is reused here.
+    #[id(0x5B0D)]
+    #[data_type(TagDataType::UnsignedInt)]
+    EntryUID,
+    */
+
+    #[id(0x1E8A9B25)]
+    #[data_type(TagDataType::Utf8)]
+    ImageTitle,
+
+    #[id(0x1E8A9B26)]
+    #[data_type(TagDataType::Utf8)]
+    Artist,
+
+    /*Region already declared and is reused here.
+    #[id(0x1E8A9B02)]
+    #[data_type(TagDataType::Utf8)]
+    Region,
+    */
+
+    #[id(0x1E8A9B28)]
+    #[data_type(TagDataType::Utf8)]
+    ImageFormat,
+
+    #[id(0x1E8A9B29)]
+    #[data_type(TagDataType::UnsignedInt)]
+    Width,
+
+    #[id(0x1E8A9B2A)]
+    #[data_type(TagDataType::UnsignedInt)]
+    Height,
+
+    #[id(0x1E8A9B2F)]
+    #[data_type(TagDataType::Utf8)]
+    CategoryDetail,
+
+    #[id(0x1E8AA007)]
+    #[data_type(TagDataType::Binary)]
+    ImageData,
+
+    /*Children of VideoCollection */
+    /*Category already declared and is reused here.
+    #[id(0x1E8A9B24)]
+    #[data_type(TagDataType::Utf8)]
+    Category,
+    */
+
+    #[id(0x2E8A1B)]
+    #[data_type(TagDataType::Master)]
+    VideoEntry,
+
+    /*Children of VideoEntry */
+    /*EntryUID already declared and is reused here.
+    #[id(0x5B0D)]
+    #[data_type(TagDataType::UnsignedInt)]
+    EntryUID,
+    */
+
+    #[id(0x1E8A9B2B)]
+    #[data_type(TagDataType::Utf8)]
+    VideoTitle,
+
+    /*Language already declared and is reused here.
+    #[id(0x1E8A9B03)]
+    #[data_type(TagDataType::Utf8)]
+    Language,
+    */
+
+    #[id(0x1E8A9B2D)]
+    #[data_type(TagDataType::UnsignedInt)]
+    Duration,
+
+    #[id(0x1E8A9B2E)]
+    #[data_type(TagDataType::Utf8)]
+    VideoFormat,
+
+    /*Width already declared and is reused here.
+    #[id(0x1E8A9B29)]
+    #[data_type(TagDataType::UnsignedInt)]
+    Width,
+    */
+
+    /*Height already declared and is reused here.
+    #[id(0x1E8A9B2A)]
+    #[data_type(TagDataType::UnsignedInt)]
+    Height,
+    */
+
+    /*ImageFormat already declared and is reused here.
+    #[id(0x1E8A9B28)]
+    #[data_type(TagDataType::Utf8)]
+    ImageFormat,
+    */
+
+    /*ImageData already declared and is reused here.
+    #[id(0x1E8AA007)]
+    #[data_type(TagDataType::Binary)]
+    ImageData,
+    */
+
+    #[id(0x1E8AA009)]
+    #[data_type(TagDataType::Binary)]
+    VideoData,
 }
