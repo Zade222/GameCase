@@ -1,6 +1,6 @@
 # GameCase: A Modern Game Archiving Toolkit
 
-[![Rust](https://github.com/your-username/gamecase/actions/workflows/rust.yml/badge.svg)](https://github.com/your-username/gamecase/actions/workflows/rust.yml)
+![Rust](https://github.com/rust-lang/rust/actions/workflows/rust.yml/badge.svg)
 
 **GameCase is a comprehensive project for creating, managing, and parsing `.gcase` game archives. It provides both a detailed file format specification and a powerful interactive terminal application to bring your game assets together.**
 
