@@ -1,6 +1,12 @@
 [workspace]
 resolver = "3"
 members = [
-    "crates/boxer_application",
+    "crates/game_case_creator",
     "crates/lib_game_case_parser",
 ]
+
+[profile.release]
+opt-level = "z"
+lto = true         
+panic = "abort"    
+strip = true

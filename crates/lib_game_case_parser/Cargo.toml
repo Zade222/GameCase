@@ -9,3 +9,4 @@ crate-type = ["rlib", "staticlib"]
 
 [dependencies]
 ebml-iterable = { version = "0.6.3", features = ["derive-spec"] }
+thiserror = "2.0.12"
