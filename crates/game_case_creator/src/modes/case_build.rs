@@ -20,6 +20,9 @@ pub fn run_case_build(
     let cb_sink = siv.cb_sink().clone();
     let cfg_clone = cfg.clone();
 
+    //Display a message while we prepare the selector
+    siv.add_layer(Dialog::info("Loading file selector..."));
+
     std::thread::spawn(move || {
         //Pop the "Loading..." dialog before showing the selector
         cb_sink.send(Box::new(|s| { s.pop_layer(); })).unwrap();
@@ -35,18 +38,18 @@ pub fn run_case_build(
             "Select a ROM or folder of ROMs.".to_string(),
             false
         ) {
-                /*After getting the path, send another closure to the UI thread
-                to continue the work, for example by showing another dialog.*/
-                cb_sink.send(Box::new(move |s| {
-                    s.add_layer(
-                        Dialog::info(format!("You selected: \
-                            {}\n\n(Next, you would implement the case \
-                            building logic here.)", 
-                            selected_path.to_string_lossy()))
-                    );
-                })).unwrap();
+            /*After getting the path, send another closure to the UI thread
+            to continue the work, for example by showing another dialog.*/
+            cb_sink.send(Box::new(move |s| {
+                s.add_layer(
+                    Dialog::info(format!("You selected: \
+                        {}\n\n(Next, you would implement the case \
+                        building logic here.)", 
+                        selected_path.to_string_lossy()))
+                );
+            })).unwrap();
         } else {
-            // The user cancelled.
+            //The user cancelled.
             cb_sink.send(Box::new(|s| {
                 s.add_layer(Dialog::info("File selection cancelled."));
             })).unwrap();
