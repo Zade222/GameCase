@@ -24,7 +24,7 @@ impl Default for AppConfig {
 pub enum BuildStep {
     #[default]
     RomSelection,
-    //ManualSelection,
+    ManualSelection,
     //RomhackSelection,
     //ImageSelection,
     //VideoSelection,
