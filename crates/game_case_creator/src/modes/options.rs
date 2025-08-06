@@ -1,4 +1,7 @@
-use std::sync::{Arc, Mutex};
+use std::{
+    path::{PathBuf},
+    sync::{Arc, Mutex}
+};
 
 use cursive::Cursive;
 use cursive::align::HAlign;
@@ -7,10 +10,10 @@ use cursive::views::{
 };
 
 use crate::cli_structs::{
-    BoxerConfig
+    AppState, AppConfig
 };
 
-use crate::utilites::{
+use crate::ui_elements::{
     file_and_directory_selector
 };
 
@@ -21,7 +24,7 @@ use crate::{
 
 pub fn run_options(
     siv: &mut Cursive,
-    cfg: Arc<Mutex<BoxerConfig>>
+    cfg: Arc<Mutex<AppConfig>>
 ) {
     
     
@@ -45,7 +48,7 @@ pub fn run_options(
                 set_region(s, cfg.clone());
             }
             "Set Default Browse Directory" =>{
-                set_def_dir(s, cfg.clone());
+                set_def_dir(s);
             }
             _ => {} //Should not happen but is required.
         }
@@ -64,7 +67,7 @@ pub fn run_options(
 
 fn set_region(
     siv: &mut Cursive,
-    cfg: Arc<Mutex<BoxerConfig>>
+    cfg: Arc<Mutex<AppConfig>>
 ) {
     let regions = vec![
         "Europe",
@@ -123,44 +126,42 @@ fn set_region(
 
 fn set_def_dir(
     siv: &mut Cursive,
-    cfg: Arc<Mutex<BoxerConfig>>
 ) {
-    let cb_sink = siv.cb_sink().clone(); //Callback sink
-    let cfg_clone = cfg.clone();
+    let cb_sink = siv.cb_sink().clone();
 
-    std::thread::spawn(move || {
-        let start_path = cfg_clone
-            .lock()
-            .unwrap().default_browse_directory
-            .clone();
+    let app_state = siv.user_data::<AppState>().unwrap().clone();
+    let start_path = app_state.config.default_browse_directory.clone();
 
-        if let Some(selected_path) = file_and_directory_selector(
-            &cb_sink, 
-            start_path,
-            "Select a new default directory.".to_string(),
-            false)
-        {
-            let mut config_data = cfg_clone.lock().unwrap();
-
-            let path_to_set = if selected_path.is_dir() {
-                selected_path
-            } else {
-                selected_path
-                    .parent()
-                    .unwrap_or(&selected_path)
-                    .to_path_buf()
-            };
-
-            config_data.default_browse_directory = path_to_set;
+    let on_selection_callback = move |selected_path: Option<PathBuf>| {
+        if let Some(path) = selected_path {
+            let mut updated_config = app_state.config.clone();
+            updated_config.default_browse_directory = path;
+            
             confy::store(
                 "boxer", 
                 "boxer-config", 
-                &*config_data
+                updated_config.clone()
             ).unwrap();
 
-            cb_sink.send(Box::new(|s| {
-                s.add_layer(Dialog::info("Default directory updated!"));
+            let final_state = AppState {
+                config: updated_config,
+                build_state: app_state.build_state.clone(),
+            };
+
+            cb_sink.send(Box::new(move |s| {
+                s.set_user_data(final_state);
+                s.add_layer(Dialog::info(
+                    "Default directory has been updated!"
+                ));
             })).unwrap();
         }
-    });
+    };
+
+    file_and_directory_selector(
+        siv.cb_sink().clone(), 
+        start_path,
+        "Select a new default directory.".to_string(),
+        true,
+        on_selection_callback
+    );
 }

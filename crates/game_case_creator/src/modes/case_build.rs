@@ -1,58 +1,82 @@
-use std::sync::{Arc, Mutex};
+use std::path::PathBuf;
 
 use cursive::{
-    views::Dialog,
     Cursive
 };
 
 use crate::cli_structs::{
-    BoxerConfig
+    AppState, BuildStep
 };
 
-use crate::utilites::{
-     file_and_directory_selector
+use crate::ui_elements::{
+    file_and_directory_selector, show_build_screen
 };
 
-pub fn run_case_build(
-    siv: &mut Cursive,
-    cfg: Arc<Mutex<BoxerConfig>>
+pub fn run_case_builder(
+    siv: &mut Cursive
 ) {
-    let cb_sink = siv.cb_sink().clone();
-    let cfg_clone = cfg.clone();
+    let current_step = siv
+        .user_data::<AppState>()
+        .unwrap().build_state.current_step.clone();
 
-    //Display a message while we prepare the selector
-    siv.add_layer(Dialog::info("Loading file selector..."));
+    match current_step {
+        BuildStep::RomSelection => show_rom_selection_screen(siv),
+    }
 
-    std::thread::spawn(move || {
-        //Pop the "Loading..." dialog before showing the selector
-        cb_sink.send(Box::new(|s| { s.pop_layer(); })).unwrap();
+}
 
-        let start_path = cfg_clone
-            .lock()
-            .unwrap().default_browse_directory
-            .clone();
+fn show_rom_selection_screen(siv: &mut Cursive) {
+    let (staged_roms, start_path) = siv
+        .with_user_data(|app_state: &mut AppState| {
+            (
+                app_state.build_state.staged_roms.clone(),
+                app_state.config.default_browse_directory.clone(),
+            )
+        })
+        .unwrap();
 
-        if let Some(selected_path) = file_and_directory_selector(
-            &cb_sink, 
-            start_path,
-            "Select a ROM or folder of ROMs.".to_string(),
-            false
-        ) {
-            /*After getting the path, send another closure to the UI thread
-            to continue the work, for example by showing another dialog.*/
-            cb_sink.send(Box::new(move |s| {
-                s.add_layer(
-                    Dialog::info(format!("You selected: \
-                        {}\n\n(Next, you would implement the case \
-                        building logic here.)", 
-                        selected_path.to_string_lossy()))
-                );
-            })).unwrap();
-        } else {
-            //The user cancelled.
-            cb_sink.send(Box::new(|s| {
-                s.add_layer(Dialog::info("File selection cancelled."));
-            })).unwrap();
-        }
-    });
+    let on_add = move |s: &mut Cursive| {
+        let cb_sink = s.cb_sink().clone();
+
+        let on_selection_callback = move |selected_path: Option<PathBuf>| {
+            if let Some(path) = selected_path {
+                cb_sink
+                    .send(Box::new(move |siv: &mut Cursive| {
+                        siv.with_user_data(|app_state: &mut AppState| {
+                            app_state.build_state.staged_roms.push(path);
+                        })
+                        .unwrap();
+                        
+                        siv.pop_layer();
+                        show_rom_selection_screen(siv);
+                    }))
+                    .unwrap();
+            }
+        };
+
+        file_and_directory_selector(
+            s.cb_sink().clone(), 
+            start_path.clone(), 
+            "Select a ROM file or a directory".to_string(), 
+            false, 
+            on_selection_callback
+        );
+    };
+
+    let on_next = |s: &mut Cursive| {
+        s.with_user_data(|app_state: &mut AppState| {
+            // We just set the state back to where we want to be
+            app_state.build_state.current_step = BuildStep::RomSelection;
+        }).unwrap();
+        
+        s.pop_layer();
+        run_case_builder(s);
+    };
+
+    show_build_screen(
+        siv, 
+        "Step 1: Add ROMs or an archive file".to_string(), 
+        &staged_roms, 
+        on_add, 
+        on_next);
 }

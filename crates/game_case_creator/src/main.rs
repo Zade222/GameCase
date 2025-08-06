@@ -11,21 +11,21 @@ use cli_error_handling::CliError;
 
 mod cli_structs;
 use cli_structs::{
-    BoxerConfig
+    AppState, AppConfig
 };
 
 mod modes;
 use modes::{
-    run_options, run_case_build
+    run_options, run_case_builder
 };
 
-mod utilites;
+mod ui_elements;
 
 mod storage_io;
 
 fn main() -> Result<(), CliError>{
     //Load config on start
-    let cfg: Arc<Mutex<BoxerConfig>> = Arc::new(
+    let cfg: Arc<Mutex<AppConfig>> = Arc::new(
         Mutex::new(
             confy::load(
                 "boxer", 
@@ -36,6 +36,12 @@ fn main() -> Result<(), CliError>{
 
     //The Cursive root
     let mut siv = cursive::default();
+
+    let initial_state = AppState {
+        config: cfg.lock().unwrap().clone(),
+        build_state: Default::default(),
+    };
+    siv.set_user_data(initial_state);
 
     siv.set_window_title("Game Case Creator");
     
@@ -56,7 +62,7 @@ fn main() -> Result<(), CliError>{
     select.set_on_submit(move |s, selection: &str| {
         match selection {
             "Create and build a GameCase" => {
-                run_case_build(s, cfg.clone());
+                run_case_builder(s);
             }
             "Read GameCase File Info" => {
 

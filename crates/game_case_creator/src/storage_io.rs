@@ -17,7 +17,6 @@ use std::fs::{self};
 /// Returns `true` if the path exists and is a regular file. Returns
 /// `false` otherwise, or if an error occurs.
 fn is_regular_file(path: &Path) -> bool {
-    // Get file metadata without following symlinks from system storage.
     fs::symlink_metadata(path)
         .map(|m| m.file_type().is_file()) 
         .unwrap_or(false) 
