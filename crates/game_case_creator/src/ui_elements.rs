@@ -11,43 +11,65 @@ use cursive::{
 
 use crate::back_to_main_menu;
 
-use crate::storage_io::list_dir_items;
+use crate::storage_io::{list_dir_items, organize_paths};
 
 /// The internal UI-building function for file_and_directory_selector
 fn selector_view(
     siv: &mut Cursive, 
     path: PathBuf, 
-    tx: Sender<Option<PathBuf>>,
+    tx: Sender<Option<Vec<PathBuf>>>,
     task_text: String,
     select_only_dir: bool,
 ) {
     let mut select_view = SelectView::<PathBuf>::new().autojump();
 
-    
-    select_view.add_all(list_dir_items(&path));
+    let mut paths: Vec<(String, PathBuf)> = Vec::new();
 
-    let tx_for_submit = tx.clone();
+    if let Some(parent) = path.parent() {
+        paths.push(("../".to_string(), parent.to_path_buf()));
+    }
+
+    paths.extend(list_dir_items(&path));
+    
+    select_view.add_all(paths);
+
+    //Clone the sender for the on_submit closure.
+    let tx_for_on_submit = tx.clone();
+    
+    //Clone the task_text for the on_submit closure.
     let task_text_for_submit = task_text.clone();
+
+    //Clone the sender for the "Submit" button's closure.
+    let tx_for_submit = tx.clone();
+
+    //Clone the sender for the "Cancel" button's closure.
+    let tx_for_cancel = tx.clone();
+
+
+    
 
     select_view.set_on_submit(move |s, selection: &PathBuf| {
         if selection.is_dir() {
-            s.pop_layer();
-            selector_view(
-                s,
-                selection.clone(),
-                tx_for_submit.clone(), 
-                task_text_for_submit.clone(), 
-                select_only_dir,
-            );
+            if select_only_dir {
+                tx_for_on_submit.send(Some(vec![selection.clone()])).unwrap_or_default();
+                s.pop_layer();
+            } else {
+                s.pop_layer();
+                selector_view(
+                    s,
+                    selection.clone(),
+                    tx.clone(), 
+                    task_text_for_submit.clone(), 
+                    select_only_dir,
+                );
+            }
         } else if !select_only_dir {
-            //If it's a file and we are not in select_only_dir mode, send the selection.
-            tx_for_submit.send(Some(selection.clone())).unwrap_or_default();
+            /*If it's a file and we are not in select_only_dir mode, send the 
+            selection.*/
+            tx_for_on_submit.send(Some(vec![selection.clone()])).unwrap_or_default();
             s.pop_layer();
         }
     });
-
-    //Clone the sender for the "Select" button's closure.
-    let tx_for_select = tx.clone();
 
     let dialog = Dialog::around(
         select_view
@@ -65,18 +87,38 @@ fn selector_view(
         if let Some(Some(selection)) = selection {
             let final_path = selection.clone();
 
-            if select_only_dir && !final_path.is_dir() {
+            if final_path.is_dir() {
+                if select_only_dir {
+                    tx_for_submit.send(Some(vec![final_path.to_path_buf()])).unwrap_or_default();
+                    s.pop_layer();
+                } else {
+                    let entries_vec = list_dir_items(&final_path);
+
+                    let entries: Vec<PathBuf> = entries_vec.iter().map(|(_, path)|{
+                        path.clone()
+                    }).collect();
+
+                    let (files_vec, _) = organize_paths(&entries).unwrap();
+
+                    let final_files: Vec<PathBuf> = files_vec.iter().map(|(_, path)|{
+                        path.clone()
+                    }).collect();
+
+                    tx_for_submit.send(Some(final_files)).unwrap_or_default();
+                    s.pop_layer();
+                }
+            } else if !select_only_dir {
+                tx_for_submit.send(Some(vec![final_path.to_path_buf()])).unwrap_or_default();
+                s.pop_layer();
+            } else {
                 s.add_layer(Dialog::info("Invalid selection: Please select a directory."));
                 return;
             }
-
-            tx_for_select.send(Some(final_path.to_path_buf())).unwrap_or_default();
-            s.pop_layer();
         }
     })
     .button("Cancel", move |s| {
-        // The original `tx` can be moved into the final closure without cloning.
-        tx.send(None).unwrap_or_default();
+        //The original `tx` can be moved into the final closure without cloning.
+        tx_for_cancel.send(None).unwrap_or_default();
         s.pop_layer();
     });
 
@@ -85,7 +127,9 @@ fn selector_view(
         .child(DummyView)
         .child(dialog)
         .child(DummyView)
-        .child(TextView::new("Navigate with arrow keys and press <Select> or <Enter>.").center());
+        .child(TextView::new(
+            "Navigate with arrow keys and press <Select> or <Enter>.")
+            .center());
 
     siv.add_layer(Dialog::around(layout));
 }
@@ -101,14 +145,20 @@ pub fn file_and_directory_selector<F>(
     select_only_dir: bool,
     on_selection: F
 ) where
-    F: FnOnce(Option<PathBuf>) + Send + 'static,
+    F: FnOnce(Option<Vec<PathBuf>>) + Send + 'static,
 {
     std::thread::spawn(move || {
         let (tx, rx) = channel();
         
         // Show the selector UI on the main thread
         cb_sink.send(Box::new(move |siv| {
-            selector_view(siv, start_path, tx, task_text, select_only_dir);
+            selector_view(
+                siv, 
+                start_path, 
+                tx, 
+                task_text, 
+                select_only_dir
+            );
         })).expect("Failed to send selector view to UI thread.");
 
         // Block this background thread until we get a result from the UI

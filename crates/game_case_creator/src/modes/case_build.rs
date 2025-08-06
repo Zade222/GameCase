@@ -38,12 +38,12 @@ fn show_rom_selection_screen(siv: &mut Cursive) {
     let on_add = move |s: &mut Cursive| {
         let cb_sink = s.cb_sink().clone();
 
-        let on_selection_callback = move |selected_path: Option<PathBuf>| {
-            if let Some(path) = selected_path {
+        let on_selection_callback = move |selected_paths: Option<Vec<PathBuf>>| {
+            if let Some(paths) = selected_paths {
                 cb_sink
                     .send(Box::new(move |siv: &mut Cursive| {
                         siv.with_user_data(|app_state: &mut AppState| {
-                            app_state.build_state.staged_roms.push(path);
+                            app_state.build_state.staged_roms.extend(paths);
                         })
                         .unwrap();
                         

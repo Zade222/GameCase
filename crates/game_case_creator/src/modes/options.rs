@@ -132,10 +132,10 @@ fn set_def_dir(
     let app_state = siv.user_data::<AppState>().unwrap().clone();
     let start_path = app_state.config.default_browse_directory.clone();
 
-    let on_selection_callback = move |selected_path: Option<PathBuf>| {
-        if let Some(path) = selected_path {
+    let on_selection_callback = move |selected_paths: Option<Vec<PathBuf>>| {
+        if let Some(paths) = selected_paths {
             let mut updated_config = app_state.config.clone();
-            updated_config.default_browse_directory = path;
+            updated_config.default_browse_directory = paths[0].clone();
             
             confy::store(
                 "boxer", 
