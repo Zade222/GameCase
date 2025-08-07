@@ -1,0 +1,12 @@
+[package]
+name = "screen_squeegee"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "screen_squeegee"
+crate-type = ["rlib", "staticlib"]
+
+[dependencies]
+reqwest = "0.12.22"
+thiserror = "2.0.12"
