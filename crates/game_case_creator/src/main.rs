@@ -40,6 +40,7 @@ fn main() -> Result<(), CliError>{
     let initial_state = AppState {
         config: cfg.lock().unwrap().clone(),
         build_state: Default::default(),
+        recent_dir: cfg.lock().unwrap().default_browse_directory.clone()
     };
     siv.set_user_data(initial_state);
 

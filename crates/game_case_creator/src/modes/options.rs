@@ -146,6 +146,7 @@ fn set_def_dir(
             let final_state = AppState {
                 config: updated_config,
                 build_state: app_state.build_state.clone(),
+                recent_dir: paths[0].clone()
             };
 
             cb_sink.send(Box::new(move |s| {

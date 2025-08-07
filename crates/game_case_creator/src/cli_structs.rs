@@ -45,4 +45,5 @@ pub struct BuildState {
 pub struct AppState {
     pub config: AppConfig,
     pub build_state: BuildState,
+    pub recent_dir: PathBuf
 }
