@@ -118,5 +118,8 @@ This project utilizes multiple licenses for its different components. Please ens
 -   **Parser Library (`lib_game_case_parser`)** is licensed under the **[Mozilla Public License 2.0 (MPL-2.0)](https://www.mozilla.org/en-US/MPL/2.0/)**.
     -   This is a "weak copyleft" license. It requires that modifications to the library's source files be shared under the MPL-2.0, but it allows you to link the library into a larger work under a different license.
 
+-   **Screen Squeegee Library (`screen_squeegee`)** is licensed under the **[Mozilla Public License 2.0 (MPL-2.0)](https://www.mozilla.org/en-US/MPL/2.0/)**.
+    -   This is a "weak copyleft" license. It requires that modifications to the library's source files be shared under the MPL-2.0, but it allows you to link the library into a larger work under a different license.
+
 -   **Specification (`SPECIFICATION.md`)** is licensed under the **[Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/)**.
     -   This license allows you to share and adapt the specification for any purpose, even commercially, as long as you give appropriate credit.
