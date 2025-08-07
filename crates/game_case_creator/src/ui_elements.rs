@@ -9,7 +9,11 @@ use cursive::{
     {CbSink, Cursive}
 };
 
-use crate::back_to_main_menu;
+use crate::{back_to_main_menu, update_rec_dir};
+
+use crate::{
+    AppState
+};
 
 use crate::storage_io::{list_dir_items, organize_paths};
 
@@ -21,6 +25,7 @@ fn selector_view(
     task_text: String,
     select_only_dir: bool,
 ) {
+    update_rec_dir(siv, &path);
     let mut select_view = SelectView::<PathBuf>::new().autojump();
 
     let mut paths: Vec<(String, PathBuf)> = Vec::new();
@@ -140,7 +145,6 @@ fn selector_view(
 /// the `on_selection` callback with the result.
 pub fn file_and_directory_selector<F>(
     cb_sink: CbSink,
-    start_path: PathBuf,
     task_text: String,
     select_only_dir: bool,
     on_selection: F
@@ -152,6 +156,11 @@ pub fn file_and_directory_selector<F>(
         
         // Show the selector UI on the main thread
         cb_sink.send(Box::new(move |siv| {
+            let start_path = siv
+                .user_data::<AppState>()
+                .unwrap().recent_dir
+                .clone();
+            
             selector_view(
                 siv, 
                 start_path, 

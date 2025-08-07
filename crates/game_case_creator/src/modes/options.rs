@@ -24,7 +24,7 @@ use crate::{
 
 pub fn run_options(
     siv: &mut Cursive,
-    cfg: Arc<Mutex<AppConfig>>
+    cfg: AppConfig
 ) {
     
     
@@ -67,7 +67,7 @@ pub fn run_options(
 
 fn set_region(
     siv: &mut Cursive,
-    cfg: Arc<Mutex<AppConfig>>
+    cfg: AppConfig
 ) {
     let regions = vec![
         "Europe",
@@ -85,7 +85,7 @@ fn set_region(
     region.add_all_str(regions);
 
     region.set_on_submit(move |s, selection: &str| {
-        let mut config_data = cfg.lock().unwrap();
+        let mut config_data = cfg.clone();
 
         match selection {
             "Europe" => {
@@ -106,7 +106,7 @@ fn set_region(
         confy::store(
             "boxer", 
             "boxer-config", 
-            &*config_data
+            config_data
         ).unwrap();
     
         s.pop_layer();
@@ -160,7 +160,6 @@ fn set_def_dir(
 
     file_and_directory_selector(
         siv.cb_sink().clone(), 
-        start_path,
         "Select a new default directory.".to_string(),
         true,
         on_selection_callback

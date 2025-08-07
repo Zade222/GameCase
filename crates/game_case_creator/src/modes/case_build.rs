@@ -82,7 +82,6 @@ fn show_selection_screen(
 
         file_and_directory_selector(
             s.cb_sink().clone(),
-            start_path.clone(),
             task_text.to_string(),
             false,
             on_selection_callback,

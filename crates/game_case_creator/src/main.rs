@@ -1,4 +1,5 @@
 use std::{
+    path::{Path},
     sync::{Arc, Mutex},
 };
 
@@ -25,22 +26,22 @@ mod storage_io;
 
 fn main() -> Result<(), CliError>{
     //Load config on start
-    let cfg: Arc<Mutex<AppConfig>> = Arc::new(
-        Mutex::new(
-            confy::load(
-                "boxer", 
-                "boxer-config"
-            )?
-        )
-    );
+    let cfg: AppConfig = match confy::load("boxer", "boxer-config") {
+        Ok(config) => config,
+        Err(e) => {
+            eprintln!("Error loading configuration: {}", e);
+            // You might want to use a default configuration in case of an error
+            AppConfig::default() 
+        }
+    };
 
     //The Cursive root
     let mut siv = cursive::default();
 
     let initial_state = AppState {
-        config: cfg.lock().unwrap().clone(),
+        config: cfg.clone(),
         build_state: Default::default(),
-        recent_dir: cfg.lock().unwrap().default_browse_directory.clone()
+        recent_dir: cfg.default_browse_directory.clone()
     };
     siv.set_user_data(initial_state);
 
@@ -93,4 +94,10 @@ pub fn back_to_main_menu(siv: &mut Cursive) {
     for _ in 1..layer_count {
         siv.pop_layer();
     }
+}
+
+pub fn update_rec_dir(siv: &mut Cursive, path: &Path) {
+    siv.with_user_data(|app_state: &mut AppState| {
+        app_state.recent_dir = path.to_path_buf();
+    });
 }
