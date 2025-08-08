@@ -2,7 +2,7 @@
 
 ![Rust](https://github.com/rust-lang/rust/actions/workflows/rust.yml/badge.svg)
 
-**GameCase is a comprehensive project for creating, managing, and parsing `.gcase` game archives. It provides both a detailed file format specification and a powerful interactive terminal application to bring your game assets together.**
+**GameCase is a comprehensive in progress project for creating, managing, and parsing `.gcase` game archives. It provides both a detailed file format specification and a powerful interactive terminal application to bring your game assets together.**
 
 This repository contains two primary components:
 
